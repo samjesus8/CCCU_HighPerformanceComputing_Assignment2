@@ -10,7 +10,7 @@ public class App {
         var MatrixEngine = new matrixEngine();
 
         //Execute method to generate 2 basic matrixes
-        var matrixes = MatrixEngine.GenerateMatrixes();
+        var matrixes = MatrixEngine.GenerateBaseMatrixes();
 
         //Display the 2 starting matrixes which will be multiplied together to give our first iteration
         System.out.println("Matrix 1: \n");

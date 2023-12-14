@@ -1,7 +1,7 @@
 import java.util.Random;
 
 public class matrixEngine {
-    public matrixResult GenerateMatrixes(){
+    public matrixResult GenerateBaseMatrixes(){
         long[][] matrix1 = new long[1000][1000];
         long[][] matrix2 = new long[1000][1000];
 
