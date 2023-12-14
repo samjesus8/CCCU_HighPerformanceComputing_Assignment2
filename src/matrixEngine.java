@@ -1,6 +1,6 @@
 import java.util.Random;
 
-public class task1 {
+public class matrixEngine {
     public matrixResult GenerateMatrixes(){
         int[][] matrix1 = new int[1000][1000];
         int[][] matrix2 = new int[1000][1000];
