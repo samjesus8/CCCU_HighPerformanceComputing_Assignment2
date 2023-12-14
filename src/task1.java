@@ -2,8 +2,8 @@ import java.util.Random;
 
 public class task1 {
     public matrixResult GenerateMatrixes(){
-        int[][] matrix1 = new int[10][10];
-        int[][] matrix2 = new int[10][10];
+        int[][] matrix1 = new int[1000][1000];
+        int[][] matrix2 = new int[1000][1000];
 
         fillMatrix(matrix1);
         fillMatrix(matrix2);

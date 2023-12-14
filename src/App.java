@@ -4,18 +4,17 @@ public class App {
         var matrixes = task1.GenerateMatrixes();
 
         System.out.println("Matrix 1: \n");
-        printMatrix(matrixes.matrix1);
+        printMatrixPreview(matrixes.matrix1, 10, 10);
         System.out.println("Matrix 2: \n");
-        printMatrix(matrixes.matrix2);
+        printMatrixPreview(matrixes.matrix2, 10, 10);
     }
 
-    private static void printMatrix(int[][] matrix) {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
+    private static void printMatrixPreview(int[][] matrix, int previewRows, int previewCols) {
+        for (int i = 0; i < Math.min(previewRows, matrix.length); i++) {
+            for (int j = 0; j < Math.min(previewCols, matrix[i].length); j++) {
                 System.out.print(matrix[i][j] + " ");
             }
             System.out.println();
         }
-        System.out.println();
     }
 }
