@@ -1,12 +1,16 @@
 public class App {
     public static void main(String[] args) throws Exception {
-        var task1 = new task1();
-        var matrixes = task1.GenerateMatrixes();
+        var Task1 = new task1();
+        var matrixes = Task1.GenerateMatrixes();
 
         System.out.println("Matrix 1: \n");
         printMatrixPreview(matrixes.matrix1, 10, 10);
         System.out.println("Matrix 2: \n");
         printMatrixPreview(matrixes.matrix2, 10, 10);
+
+        var result1 = Task1.multiplyMatrices(matrixes.matrix1, matrixes.matrix2);
+        System.out.println("1st Multiplication: \n");
+        printMatrixPreview(result1, 10, 10);
     }
 
     private static void printMatrixPreview(int[][] matrix, int previewRows, int previewCols) {

@@ -21,7 +21,16 @@ public class task1 {
         }
     }
 
-    public String MultiplyMatrixes(){
-        return "Test";
+    public int[][] multiplyMatrices(int[][] matrix1, int[][] matrix2) {
+        int[][] resultMatrix = new int[1000][1000];
+        for (int i = 0; i < matrix1.length; i++) {
+            for (int j = 0; j < matrix2[0].length; j++) {
+                for (int k = 0; k < matrix2.length; k++) {
+                    resultMatrix[i][j] += matrix1[i][k] * matrix2[k][j];
+                }
+            }
+        }
+
+        return resultMatrix;
     }
 }
