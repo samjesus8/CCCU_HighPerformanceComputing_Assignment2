@@ -1,5 +1,11 @@
 public class App {
     public static void main(String[] args) throws Exception {
+        System.out.println("Samuel Jesuthas - HPC Assignment 2 (Matrix Multiplication) \n" +
+                            "====================================================================================================\n" +
+                            "This program will only display the first 10x10 portion of the 1000x1000 matrix \n" +
+                            "This is because displaying a whole 1000x1000 matrix can be cumbersome during the testing process \n" +
+                            "====================================================================================================\n\n");
+
         //Initialize the main Matrix generation class
         var MatrixEngine = new matrixEngine();
 
@@ -8,7 +14,7 @@ public class App {
 
         //Display the 2 starting matrixes which will be multiplied together to give our first iteration
         System.out.println("Matrix 1: \n");
-        printMatrixPreview(matrixes.matrix1, 10, 10);
+        printMatrixPreview(matrixes.matrix1, 10, 10); //We will only display the first 10x10 portion of the matrix
         System.out.println("Matrix 2: \n");
         printMatrixPreview(matrixes.matrix2, 10, 10);
 
@@ -18,7 +24,7 @@ public class App {
         printMatrixPreview(result1, 10, 10);
 
         //Now a 2nd randomly generated 1000x1000 matrix will be created
-        int[][] secondIterationMatrix = new int[1000][1000];
+        long[][] secondIterationMatrix = new long[1000][1000];
         MatrixEngine.fillMatrix(secondIterationMatrix);
 
         //We will multiply this matrix by the result of the 1st multiplication
@@ -27,7 +33,7 @@ public class App {
         printMatrixPreview(result2, 10, 10);
 
         //And we will do this a 3rd time, for our 3rd iteration
-        int[][] thirdIterationMatrix = new int[1000][1000];
+        long[][] thirdIterationMatrix = new long[1000][1000];
         MatrixEngine.fillMatrix(thirdIterationMatrix);
 
         //Multiplying the 3rd matrix by the result of the 2nd multiplication
@@ -38,7 +44,7 @@ public class App {
 
     //Method to display a matrix with the option to only display a specific portion
     //This is because a whole 1000x1000 matrix can be cumbersome to view entirely
-    private static void printMatrixPreview(int[][] matrix, int previewRows, int previewCols) {
+    private static void printMatrixPreview(long[][] matrix, int previewRows, int previewCols) {
         for (int i = 0; i < Math.min(previewRows, matrix.length); i++) {
             for (int j = 0; j < Math.min(previewCols, matrix[i].length); j++) {
                 System.out.print(matrix[i][j] + " ");
