@@ -16,18 +16,28 @@ public class App {
                             "3. Exit Program");
         int input = threadingInputOption.nextInt();
 
-        if (input == 1){
+        long startTime, endTime;
+
+        if (input == 1) {
+            startTime = System.currentTimeMillis();
             performMatrixMultiplicationNoThreading();
-        }
-        else if (input == 2){
+            endTime = System.currentTimeMillis();
+        } else if (input == 2) {
+            startTime = System.currentTimeMillis();
             performMatrixMultiplicationThreading();
-        }
-        else if (input == 3){
+            endTime = System.currentTimeMillis();
+        } else if (input == 3) {
             System.out.println("Exiting Program...");
-        }
-        else{
+            threadingInputOption.close();
+            return; // Exit the program
+        } else {
             System.out.println("Please enter a valid option number!!!");
+            threadingInputOption.close();
+            return; // Exit the program
         }
+
+        long executionTime = endTime - startTime;
+        System.out.println("Execution time: " + executionTime + " milliseconds");
 
         threadingInputOption.close();
     }
