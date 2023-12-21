@@ -1,11 +1,32 @@
+import java.util.Scanner;
+
 public class App {
     public static void main(String[] args) throws Exception {
         System.out.println("Samuel Jesuthas - HPC Assignment 2 (Matrix Multiplication) \n" +
                             "====================================================================================================\n" +
                             "This program will only display the first 10x10 portion of the 1000x1000 matrix \n" +
                             "This is because displaying a whole 1000x1000 matrix can be cumbersome during the testing process \n" +
+                            "However, you can change edit the size of the displayed matrix by editing \nthe previewRows/previewCols whenever the method printMatrixPreview() is executed \n"+
                             "====================================================================================================\n\n");
 
+        Scanner threadingInputOption = new Scanner(System.in);
+        System.out.println("Please choose an option to run this program \n" +
+                            "1. Run with No Threading \n" +
+                            "2. Run with Threading");
+        int input = threadingInputOption.nextInt();
+
+        if (input == 1){
+            performMatrixMultiplicationNoThreading();
+        }
+        else if (input == 2){
+            performMatrixMultiplicationThreading();
+        }
+        else{
+            System.out.println("Please enter a valid option number!!!");
+        }
+    }
+
+    private static void performMatrixMultiplicationNoThreading() {
         //Initialize the main Matrix generation class
         var MatrixEngine = new matrixEngine();
 
@@ -40,6 +61,10 @@ public class App {
         var result3 = MatrixEngine.multiplyMatrices(result2, thirdIterationMatrix);
         System.out.println("3rd Multiplication: \n");
         printMatrixPreview(result3, 10, 10);
+    }
+
+    private static void performMatrixMultiplicationThreading() {
+        System.out.println("Test");
     }
 
     //Method to display a matrix with the option to only display a specific portion
