@@ -12,7 +12,8 @@ public class App {
         Scanner threadingInputOption = new Scanner(System.in);
         System.out.println("Please choose an option to run this program \n" +
                             "1. Run with No Threading \n" +
-                            "2. Run with Threading");
+                            "2. Run with Threading \n" +
+                            "3. Exit Program");
         int input = threadingInputOption.nextInt();
 
         if (input == 1){
@@ -20,6 +21,9 @@ public class App {
         }
         else if (input == 2){
             performMatrixMultiplicationThreading();
+        }
+        else if (input == 3){
+            System.out.println("Exiting Program...");
         }
         else{
             System.out.println("Please enter a valid option number!!!");
@@ -43,7 +47,7 @@ public class App {
 
         //Executing the multiplication method to get our first iteration
         var result1 = MatrixEngine.multiplyMatrices(matrixes.matrix1, matrixes.matrix2);
-        System.out.println("1st Multiplication: \n");
+        System.out.println("1st Multiplication /w No Threading: \n");
         printMatrixPreview(result1, 10, 10);
 
         //Now a 2nd randomly generated 1000x1000 matrix will be created
@@ -52,7 +56,7 @@ public class App {
 
         //We will multiply this matrix by the result of the 1st multiplication
         var result2 = MatrixEngine.multiplyMatrices(result1, secondIterationMatrix);
-        System.out.println("2nd Multiplication: \n");
+        System.out.println("2nd Multiplication /w No Threading: \n");
         printMatrixPreview(result2, 10, 10);
 
         //And we will do this a 3rd time, for our 3rd iteration
@@ -61,12 +65,13 @@ public class App {
 
         //Multiplying the 3rd matrix by the result of the 2nd multiplication
         var result3 = MatrixEngine.multiplyMatrices(result2, thirdIterationMatrix);
-        System.out.println("3rd Multiplication: \n");
+        System.out.println("3rd Multiplication /w No Threading: \n");
         printMatrixPreview(result3, 10, 10);
     }
 
     private static void performMatrixMultiplicationThreading() {
-        System.out.println("Test");
+        var matrixThreadingEngine = new matrixEngineThreaded();
+        matrixThreadingEngine.performMatrixMultiplicationThreaded();
     }
 
     //Method to display a matrix with the option to only display a specific portion
