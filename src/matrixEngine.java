@@ -2,9 +2,11 @@ import java.util.Random;
 
 public class matrixEngine {
     public matrixResult GenerateBaseMatrixes(){
+        //This method should only be used at the very start to generate 2 base matrixes to start the multiplying process
         long[][] matrix1 = new long[1000][1000];
         long[][] matrix2 = new long[1000][1000];
 
+        //This method generates numbers between 1-100 and fills every section of the matrix
         fillMatrix(matrix1);
         fillMatrix(matrix2);
 
@@ -22,7 +24,9 @@ public class matrixEngine {
     }
 
     public long[][] multiplyMatrices(long[][] matrix1, long[][] matrix2) {
-        long[][] resultMatrix = new long[1000][1000];
+        long[][] resultMatrix = new long[1000][1000]; //Create empty 1000x1000 matrix to store the result
+
+        //For loop through each dimension of the matrix and perform dot product multiplication
         for (int i = 0; i < matrix1.length; i++) {
             for (int j = 0; j < matrix2[0].length; j++) {
                 for (int k = 0; k < matrix2.length; k++) {
@@ -36,6 +40,7 @@ public class matrixEngine {
 }
 
 class matrixResult {
+    //This class is used to be able to return 2 values at once in a method
     long[][] matrix1;
     long[][] matrix2;
 

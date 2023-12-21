@@ -9,6 +9,7 @@
 - This program will generate 2, **1000x1000** matrixes and multiply them together
 - It will take the **result** of this calculation, and multiply it by **another 1000x1000 matrix**
 - Then, it will take the **result of this 2nd iteration**, and multiply it by **another 1000x1000 matrix** to get a 3rd result
+- This program can run in a Threaded or Non-Threaded fashion. The threaded version will be significantly faster as the workloads are distributed among multiple threads
 
 ## Getting started
 

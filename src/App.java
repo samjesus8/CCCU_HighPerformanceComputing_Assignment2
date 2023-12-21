@@ -9,6 +9,7 @@ public class App {
                             "However, you can change edit the size of the displayed matrix by editing \nthe previewRows/previewCols whenever the method printMatrixPreview() is executed \n"+
                             "====================================================================================================\n\n");
 
+        //Ask the user if they want to run the program threaded/non-threaded
         Scanner threadingInputOption = new Scanner(System.in);
         System.out.println("Please choose an option to run this program \n" +
                             "1. Run with No Threading \n" +
@@ -16,7 +17,7 @@ public class App {
                             "3. Exit Program");
         int input = threadingInputOption.nextInt();
 
-        long startTime, endTime;
+        long startTime, endTime; //These 2 variables will be used to show how long it took for our methods to execute
 
         if (input == 1) {
             startTime = System.currentTimeMillis();
@@ -36,7 +37,7 @@ public class App {
             return; // Exit the program
         }
 
-        long executionTime = endTime - startTime;
+        long executionTime = endTime - startTime; //Subtracting the times will give us the actual execution time of the program
         System.out.println("Execution time: " + executionTime + " milliseconds");
 
         threadingInputOption.close();
