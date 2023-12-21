@@ -46,10 +46,14 @@ public class matrixEngineThreaded {
         ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
         int chunkSize = MATRIX_SIZE / numThreads;
 
+        long[][] resultMatrix = new long[MATRIX_SIZE][MATRIX_SIZE];
+        Runnable[] tasks = new Runnable[numThreads];
+
         for (int i = 0; i < numThreads; i++) {
             int startRow = i * chunkSize;
             int endRow = (i + 1) * chunkSize;
-            executorService.submit(() -> multiplySubMatrix(matrix1, matrix2, startRow, endRow));
+            tasks[i] = () -> multiplySubMatrix(matrix1, matrix2, resultMatrix, startRow, endRow);
+            executorService.submit(tasks[i]);
         }
 
         executorService.shutdown();
@@ -60,29 +64,39 @@ public class matrixEngineThreaded {
             e.printStackTrace();
         }
 
-        return matrix1; // matrix1 is modified in-place, containing the final result
+        return resultMatrix;
     }
 
-    private static void multiplySubMatrix(long[][] matrix1, long[][] matrix2, int startRow, int endRow) {
+    private static void multiplySubMatrix(long[][] matrix1, long[][] matrix2, long[][] resultMatrix, int startRow, int endRow) {
         for (int i = startRow; i < endRow; i++) {
             for (int j = 0; j < MATRIX_SIZE; j++) {
                 for (int k = 0; k < MATRIX_SIZE; k++) {
-                    matrix1[i][j] += matrix1[i][k] * matrix2[k][j];
+                    resultMatrix[i][j] += matrix1[i][k] * matrix2[k][j];
                 }
             }
         }
     }
 
     private static void verifyResult(long[][] result, long[][] goldStandardResult) {
+        // Check if the resulting matrix is all zeros
+        boolean verificationPassed = true;
         for (int i = 0; i < MATRIX_SIZE; i++) {
             for (int j = 0; j < MATRIX_SIZE; j++) {
                 if (result[i][j] != goldStandardResult[i][j]) {
-                    System.err.println("Verification failed! Results differ.");
-                    return;
+                    verificationPassed = false;
+                    break;
                 }
             }
+            if (!verificationPassed) {
+                break;
+            }
         }
-        System.out.println("Verification successful! Results match the gold standard.");
+
+        if (verificationPassed) {
+            System.out.println("Verification successful! Results match the gold standard.");
+        } else {
+            System.err.println("Verification failed! Results differ.");
+        }
     }
 
     private static void printMatrixPreview(long[][] matrix, int rows, int cols) {
