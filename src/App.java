@@ -24,6 +24,8 @@ public class App {
         else{
             System.out.println("Please enter a valid option number!!!");
         }
+
+        threadingInputOption.close();
     }
 
     private static void performMatrixMultiplicationNoThreading() {
