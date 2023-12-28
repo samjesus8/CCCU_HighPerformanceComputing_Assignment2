@@ -24,21 +24,21 @@ public class matrixEngineThreadPool {
 
         //Then run our threads to perform this multiplication
         long[][] result1 = performMatrixMultiplication(matrices.matrix1, matrices.matrix2, NUM_THREADS);
-        System.out.println("1st Multiplication with Threading: \n");
+        System.out.println("1st Multiplication /w Thread Pool: \n");
         printMatrixPreview(result1, 10, 10);
 
         //2nd Iteration
         long[][] secondIterationMatrix = new long[MATRIX_SIZE][MATRIX_SIZE];
         matrixEngine.fillMatrix(secondIterationMatrix);
         long[][] result2 = performMatrixMultiplication(result1, secondIterationMatrix, NUM_THREADS);
-        System.out.println("2nd Multiplication with Threading: \n");
+        System.out.println("2nd Multiplication /w Thread Pool: \n");
         printMatrixPreview(result2, 10, 10);
 
         //3rd Iteration
         long[][] thirdIterationMatrix = new long[MATRIX_SIZE][MATRIX_SIZE];
         matrixEngine.fillMatrix(thirdIterationMatrix);
         long[][] result3 = performMatrixMultiplication(result2, thirdIterationMatrix, NUM_THREADS);
-        System.out.println("3rd Multiplication with Threading: \n");
+        System.out.println("3rd Multiplication /w Thread Pool: \n");
         printMatrixPreview(result3, 10, 10);
 
         //Time at the end of the method
