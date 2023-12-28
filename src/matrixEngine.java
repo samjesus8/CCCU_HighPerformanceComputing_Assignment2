@@ -37,6 +37,36 @@ public class matrixEngine {
 
         return resultMatrix;
     }
+
+    public long[][] multiplyMatricesThreaded(long[][] matrix1, long[][] matrix2, int numThreads) {
+        long[][] resultMatrix = new long[1000][1000];
+
+        // Calculate the number of rows each thread will handle
+        int rowsPerThread = 1000 / numThreads;
+
+        // Create an array to hold the threads
+        matrixEngineThreaded[] threads = new matrixEngineThreaded[numThreads];
+
+        // Start the threads
+        for (int i = 0; i < numThreads; i++) {
+            int startRow = i * rowsPerThread;
+            int endRow = (i == numThreads - 1) ? 1000 : (i + 1) * rowsPerThread;
+
+            threads[i] = new matrixEngineThreaded(matrix1, matrix2, resultMatrix, startRow, endRow);
+            threads[i].start();
+        }
+
+        // Wait for all threads to finish
+        try {
+            for (int i = 0; i < numThreads; i++) {
+                threads[i].join();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return resultMatrix;
+    }
 }
 
 class matrixResult {

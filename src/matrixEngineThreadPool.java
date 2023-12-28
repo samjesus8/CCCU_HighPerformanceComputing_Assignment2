@@ -7,6 +7,12 @@ public class matrixEngineThreadPool {
     private static final int NUM_THREADS = 4; // Number of threads which we can change
 
     public void performMatrixMultiplicationThreaded() {
+        //Time variables
+        long startTime, endTime;
+
+        //Time at the start of the method
+        startTime = System.currentTimeMillis();
+
         //Generate our 2 base matrixes
         var matrixEngine = new matrixEngine();
         var matrices = matrixEngine.GenerateBaseMatrixes();
@@ -34,6 +40,11 @@ public class matrixEngineThreadPool {
         long[][] result3 = performMatrixMultiplication(result2, thirdIterationMatrix, NUM_THREADS);
         System.out.println("3rd Multiplication with Threading: \n");
         printMatrixPreview(result3, 10, 10);
+
+        //Time at the end of the method
+        endTime = System.currentTimeMillis();
+        long executionTime = endTime - startTime;
+        System.out.println("Thread Pool Execution time: " + executionTime + " milliseconds \n");
 
         // Now we verify the threaded results, against the non threaded to see if they are the same
         var goldStandardResult1 = matrixEngine.multiplyMatrices(matrices.matrix1, matrices.matrix2);

@@ -12,8 +12,8 @@ public class App {
         //Ask the user if they want to run the program threaded/non-threaded
         Scanner threadingInputOption = new Scanner(System.in);
         System.out.println("Please choose an option to run this program \n" +
-                            "1. Run with No Threading \n" +
-                            "2. Run with Threading \n" +
+                            "1. Run /w No Threading \n" +
+                            "2. Run /w Threading \n" +
                             "3. Run using Thread Pool \n" +
                             "4. Exit Program");
         int input = threadingInputOption.nextInt();
@@ -26,7 +26,7 @@ public class App {
             endTime = System.currentTimeMillis();
         } else if (input == 2) {
             startTime = System.currentTimeMillis();
-            //Method
+            performMatrixMultiplicationThreaded();
             endTime = System.currentTimeMillis();
         } else if (input == 3) {
             startTime = System.currentTimeMillis();
@@ -43,7 +43,7 @@ public class App {
         }
 
         long executionTime = endTime - startTime; //Subtracting the times will give us the actual execution time of the program
-        System.out.println("Execution time: " + executionTime + " milliseconds");
+        System.out.println("\nProgram Execution time: " + executionTime + " milliseconds");
 
         threadingInputOption.close();
     }
@@ -82,6 +82,41 @@ public class App {
         //Multiplying the 3rd matrix by the result of the 2nd multiplication
         var result3 = MatrixEngine.multiplyMatrices(result2, thirdIterationMatrix);
         System.out.println("3rd Multiplication /w No Threading: \n");
+        printMatrixPreview(result3, 10, 10);
+    }
+
+    private static void performMatrixMultiplicationThreaded() {
+        //Initialize Class
+        var MatrixEngine = new matrixEngine();
+
+        //Generate base matrixes
+        var matrixes = MatrixEngine.GenerateBaseMatrixes();
+
+        //Print out the first 10x10 portion of each matrix
+        System.out.println("Matrix 1: \n");
+        printMatrixPreview(matrixes.matrix1, 10, 10);
+        System.out.println("Matrix 2: \n");
+        printMatrixPreview(matrixes.matrix2, 10, 10);
+
+        //Multiplication 1 (Using 4 threads)
+        var result1 = MatrixEngine.multiplyMatricesThreaded(matrixes.matrix1, matrixes.matrix2, 4);
+        System.out.println("1st Multiplication /w Threading: \n");
+        printMatrixPreview(result1, 10, 10);
+
+        //Multiplication 2
+        long[][] secondIterationMatrix = new long[1000][1000];
+        MatrixEngine.fillMatrix(secondIterationMatrix);
+
+        var result2 = MatrixEngine.multiplyMatricesThreaded(result1, secondIterationMatrix, 4);
+        System.out.println("2nd Multiplication /w Threading: \n");
+        printMatrixPreview(result2, 10, 10);
+
+        //Multiplication 3
+        long[][] thirdIterationMatrix = new long[1000][1000];
+        MatrixEngine.fillMatrix(thirdIterationMatrix);
+
+        var result3 = MatrixEngine.multiplyMatricesThreaded(result2, thirdIterationMatrix, 4);
+        System.out.println("3rd Multiplication /w Threading: \n");
         printMatrixPreview(result3, 10, 10);
     }
 
