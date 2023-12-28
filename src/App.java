@@ -14,7 +14,8 @@ public class App {
         System.out.println("Please choose an option to run this program \n" +
                             "1. Run with No Threading \n" +
                             "2. Run with Threading \n" +
-                            "3. Exit Program");
+                            "3. Run using Thread Pool \n" +
+                            "4. Exit Program");
         int input = threadingInputOption.nextInt();
 
         long startTime, endTime; //These 2 variables will be used to show how long it took for our methods to execute
@@ -25,9 +26,13 @@ public class App {
             endTime = System.currentTimeMillis();
         } else if (input == 2) {
             startTime = System.currentTimeMillis();
-            performMatrixMultiplicationThreading();
+            //Method
             endTime = System.currentTimeMillis();
         } else if (input == 3) {
+            startTime = System.currentTimeMillis();
+            performMatrixMultiplicationThreadPool();
+            endTime = System.currentTimeMillis();
+        } else if (input == 4) {
             System.out.println("Exiting Program...");
             threadingInputOption.close();
             return; // Exit the program
@@ -80,8 +85,8 @@ public class App {
         printMatrixPreview(result3, 10, 10);
     }
 
-    private static void performMatrixMultiplicationThreading() {
-        var matrixThreadingEngine = new matrixEngineThreaded();
+    private static void performMatrixMultiplicationThreadPool() {
+        var matrixThreadingEngine = new matrixEngineThreadPool();
         matrixThreadingEngine.performMatrixMultiplicationThreaded();
     }
 

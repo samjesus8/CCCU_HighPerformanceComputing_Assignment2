@@ -2,7 +2,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class matrixEngineThreaded {
+public class matrixEngineThreadPool {
     private static final int MATRIX_SIZE = 1000; // Working with our 1000x1000 matrix
     private static final int NUM_THREADS = 4; // Number of threads which we can change
 
