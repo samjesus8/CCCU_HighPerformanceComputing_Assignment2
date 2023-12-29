@@ -47,7 +47,7 @@ public class matrixEngine {
         // Create an array to hold the threads
         matrixEngineThreaded[] threads = new matrixEngineThreaded[numThreads];
 
-        // Start the threads
+        // Calculating the distribution of workflow for these threads
         for (int i = 0; i < numThreads; i++) {
             int startRow = i * rowsPerThread;
             int endRow = (i == numThreads - 1) ? 1000 : (i + 1) * rowsPerThread;

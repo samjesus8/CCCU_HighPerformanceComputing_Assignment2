@@ -1,175 +1,180 @@
 # Dynamic Intel, wants code!
-
-- Author of Report -> ```Samuel Jesuthas```
-
 ## Assignment Details
 
-- Module -> ```MCOMD3HPC – High Performance Computing```
-- Deadline -> ```10th January 2024```
-- This is Assignment 2 which is 50% of the overall module grade
+- Author: ```Samuel Jesuthas```
+- Module: ```MCOMD3HPC – High Performance Computing```
+- Deadline: ```10th January 2024```
 
 ## Introduction
 
-- This report will be a detailed analysis of the importance of threading in applications. When a program runs multi-threaded, you are spreading out the resources to multiple workhorses, which increases the performance of your program compared to running it on a single thread.
-- The program simply generates 2 1000x1000 matrixes with random values, and multiplies them together. It then takes the result of this and multiplies it by another 1000x1000 randomly generated matrix, and then it will do this for a 3rd time to get 3 iterations of 1000x1000 matrix multiplications.
-- Throughout this report, we will analyze the importance of threading in this application as it significantly increases the performance when the multiplications are performed. We will also look at thread pool implementations for this program and we will test how stable and scalable our solution is for business use.
+- This report will feature detailed analysis of the importance of threading in high performance applications. When a program runs multi-threaded, you are spreading out the workload to multiple workhorses, which increases the overall performance of your program.
+
+- The program we will look at, simply generates 2, 1000x1000 matrixes with random values, and multiplies them together. It then takes the result of this and multiplies it by another 1000x1000 randomly generated matrix, and then it will do this for a 3rd time to get 3 iterations.
+
+- Throughout this report, we will analyze the importance of threading in this application as it significantly increases the performance when the multiplications are performed. We will also look at thread pool implementations for this program and we will test how stable and scalable my solution is for business use.
 
 ## Github Repository
 
-- Although the code will be submitted as a `.zip` file, you can also view the code in the following repository.
-- This repo will contain the final solution of the assignment. All the main code will be in the `src` folder.
-- https://github.com/samjesus8/HPC-Assignment2
+- Although the solution will be submitted as a `.zip` file, you can also view it in the following repository.
+    - https://github.com/samjesus8/HPC-Assignment2
+
+## Testing Information
+
+- Note that all the testing and program execution examples in this report, have been performed on a desktop machine with the following specs:
+    - CPU: **AMD Ryzen 5 5600G**
+    - RAM: **32 GB DDR4**
+    - GPU: **AMD Radeon RX 6700 (10 GB GDDR6)**
+
+- Keep in mind that the actual performance may vary based on the system and the workload.
 
 ## Task 1 - Simple Implementation (Non-Threaded)
 
 ### matrixEngine.java (Matrix Calculation Handler)
-- To perform a simple 1000x1000 matrix multiplication, first we need to generate the 2 matrixes to get our first iteration. Bear in mind we will be doing 3 iterations so to simplify the process, I made a class called `matrixEngine` that will handle everything for us.
+
+- To perform a 1000x1000 matrix multiplication, firstly, we need to generate the 2 matrixes to get our first iteration. Bear in mind we will be doing 3 iterations so to simplify the process, I made a class called `matrixEngine` that will handle everything for us.
 
 - The first method `GenerateBaseMatrixes()` will generate our 2 1000x1000 matrixes which we will multiply together.
 
-```java
-public matrixResult GenerateBaseMatrixes()
-{
-    long[][] matrix1 = new long[1000][1000];
-    long[][] matrix2 = new long[1000][1000];
+    ```java
+    public matrixResult GenerateBaseMatrixes()
+    {
+        long[][] matrix1 = new long[1000][1000];
+        long[][] matrix2 = new long[1000][1000];
 
-    fillMatrix(matrix1);
-    fillMatrix(matrix2);
+        fillMatrix(matrix1);
+        fillMatrix(matrix2);
 
-    return new matrixResult(matrix1, matrix2);
-}
-```
-- The reason I am using `long` as the data type for the matrix, is so that I can handle overflow of values. `long` can support values from `-9,223,372,036,854,775,808` up to `9,223,372,036,854,775,807`.
+        return new matrixResult(matrix1, matrix2);
+    }
+    ```
 
-- Because Java doesn't allow methods to return more than 1 data type, I made another class called `matrixResult` which basically stores the 2 matrixes in one object, also known as a tuple.
+    - The reason I am using `long` as the data type for the matrix, is so that I can handle overflow of values. `long` can support values from `-9,223,372,036,854,775,808` up to `9,223,372,036,854,775,807`.
+
+    - Because Java doesn't allow methods to return more than 1 data type, I made another class called `matrixResult` which basically stores the 2 matrixes in one object, also known as a tuple.
 
 - The `fillMatrix()` method simply does a `for` loop through each value of the matrix and fills it with a value that is randomly generated from 1-100.
 
-```java
-public void fillMatrix(long[][] matrix)
-{
-    Random random = new Random();
+    ```java
+    public void fillMatrix(long[][] matrix)
+    {
+        Random random = new Random();
 
-    for (int i = 0; i < matrix.length; i++) {
-        for (int j = 0; j < matrix[i].length; j++) {
-            matrix[i][j] = random.nextInt(100);
-        }
-    }
-}
-```
-
-- The final method in this class is the `multiplyMatrices()` method, which is what we will be using to multiply 2 matrixes together.
-
-```java
-public long[][] multiplyMatrices(long[][] matrix1, long[][] matrix2) 
-{
-    long[][] resultMatrix = new long[1000][1000];
-    for (int i = 0; i < matrix1.length; i++) {
-        for (int j = 0; j < matrix2[0].length; j++) {
-            for (int k = 0; k < matrix2.length; k++) {
-                resultMatrix[i][j] += matrix1[i][k] * matrix2[k][j];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[i].length; j++) {
+                matrix[i][j] = random.nextInt(100);
             }
         }
     }
+    ```
 
-    return resultMatrix;
-}
-```
+- The final method in this class is the `multiplyMatrices()` method, which is what we will be using to multiply 2 matrixes together.
 
-- `resultMatrix` is an empty 1000x1000 matrix which we will use as the result variable. Everything we do in the multiplication, will be stored in this variable.
+    ```java
+    public long[][] multiplyMatrices(long[][] matrix1, long[][] matrix2) 
+    {
+        long[][] resultMatrix = new long[1000][1000];
+        for (int i = 0; i < matrix1.length; i++) {
+            for (int j = 0; j < matrix2[0].length; j++) {
+                for (int k = 0; k < matrix2.length; k++) {
+                    resultMatrix[i][j] += matrix1[i][k] * matrix2[k][j];
+                }
+            }
+        }
 
-- The triple-nested `for` loop in this method is what performs the multiplication. What it does is iterate through each element of the 2 matrixes and perform dot-product matrix multiplication
-    - `i` will iterate over every ROW of `matrix1`
-    - `j` will iterate over every COLUMN of `matrix2`
-    - `k` will iterate over the COLUMNS of `matrix1` and the ROWS of `matrix2`
+        return resultMatrix;
+    }
+    ```
+
+    - The triple-nested `for` loop in this method is what performs the multiplication. What it does is iterate through each element of the 2 matrixes and perform dot-product matrix multiplication
+        - `i` will iterate over every ROW of `matrix1`
+        - `j` will iterate over every COLUMN of `matrix2`
+        - `k` will iterate over the COLUMNS of `matrix1` and the ROWS of `matrix2`
 
 - As we are iterating over every element of the matrix, we get the product of the current row of `matrix1` and then multiply it by the product of the current column of `matrix2`. We assign the results of this to the corresponding element of the `resultMatrix` matrix
 
-```java
-resultMatrix[i][j] += matrix1[i][k] * matrix2[k][j];
-```
+    ```java
+    resultMatrix[i][j] += matrix1[i][k] * matrix2[k][j];
+    ```
 
 ### App.java (The main program)
 
-- Now we know how the logic works for generating & multiplying 2 matrixes together, we can now execute these functions and get a proper output
-
-- We have to multiply 3 times:
+- Reminder that we have to do 3 iterations:
     - Generate 2 matrixes, multiply them together
     - Get the result of this, multiply by a new 1000x1000 matrix
     - Get the result of this 2nd iteration, multiply by a new 1000x1000 matrix
 
-- I have split the application to run either threaded or non threaded. Selecting option 1 will execute the non threaded method, which is called `performMatrixMultiplicationNoThreading()`
+- I have split the application to run either threaded/non threaded, in a thread pool. Selecting option 1 will execute the non threaded method, which is called `performMatrixMultiplicationNoThreading()`
 
-```
-Please choose an option to run this program 
-1. Run with No Threading 
-2. Run with Threading 
-3. Exit Program
-```
+    ```
+    Please choose an option to run this program 
+    1. Run /w No Threading
+    2. Run /w Threading
+    3. Run using Thread Pool
+    4. Exit Program
+    ```
 
-- First of all, let's generate our 2 base matrixes
+- The first portion of this method, will initialize our matrixes and prepare them for multiplication
 
-```java
-//Initialize the main Matrix generation class
-var MatrixEngine = new matrixEngine();
+    ```java
+    //Initialize the main Matrix generation class
+    var MatrixEngine = new matrixEngine();
 
-//Execute method to generate 2 basic matrixes
-var matrixes = MatrixEngine.GenerateBaseMatrixes();
+    //Execute method to generate 2 basic matrixes
+    var matrixes = MatrixEngine.GenerateBaseMatrixes();
 
-//Display the 2 starting matrixes which will be multiplied together to give our first iteration
-System.out.println("Matrix 1: \n");
-//We will only display the first 10x10 portion of the matrix
-printMatrixPreview(matrixes.matrix1, 10, 10);
+    //Display the 2 starting matrixes which will be multiplied together to give our first iteration
+    System.out.println("Matrix 1: \n");
+    //We will only display the first 10x10 portion of the matrix
+    printMatrixPreview(matrixes.matrix1, 10, 10);
 
-System.out.println("Matrix 2: \n");
-printMatrixPreview(matrixes.matrix2, 10, 10);
-```
+    System.out.println("Matrix 2: \n");
+    printMatrixPreview(matrixes.matrix2, 10, 10);
+    ```
 
-- The `printMatrixPreview()` method will read the matrix and it can output a variable length of the matrix. In this case, I am just outputting the first 10x10 portion of the matrix
+    - The `printMatrixPreview()` method will read the matrix and it can output a variable length of the matrix. In this case, I am just outputting the first 10x10 portion of the matrix
 
 - Now we will perform our first multiplication by using the `multiplyMatrices()` method. We will parse in the 2 matrixes we have just generated
 
-```java
-//Executing the multiplication method to get our first iteration
-var result1 = MatrixEngine.multiplyMatrices(matrixes.matrix1, matrixes.matrix2);
-System.out.println("1st Multiplication /w No Threading: \n");
-printMatrixPreview(result1, 10, 10);
-```
+    ```java
+    //Executing the multiplication method to get our first iteration
+    var result1 = MatrixEngine.multiplyMatrices(matrixes.matrix1, matrixes.matrix2);
+    System.out.println("1st Multiplication /w No Threading: \n");
+    printMatrixPreview(result1, 10, 10);
+    ```
 
-- Since the method returns a `long[][]` it would be best to store this in a variable, which is what `result1` is.
-- We can use the `printMatrixPreview()` again to display the output
+    - Since the method returns a `long[][]` it would be best to store this in a variable, which is what `result1` is.
 
 - Now we have our first iteration, all we have to do is multiply again twice. We take the output of `result1` and multiply it by a brand new 1000x1000 matrix
 
-```java
-//Now a 2nd randomly generated 1000x1000 matrix will be created
-long[][] secondIterationMatrix = new long[1000][1000];
-MatrixEngine.fillMatrix(secondIterationMatrix);
+    ```java
+    //Now a 2nd randomly generated 1000x1000 matrix will be created
+    long[][] secondIterationMatrix = new long[1000][1000];
+    MatrixEngine.fillMatrix(secondIterationMatrix);
 
-//We will multiply this matrix by the result of the 1st multiplication
-var result2 = MatrixEngine.multiplyMatrices(result1, secondIterationMatrix);
-System.out.println("2nd Multiplication /w No Threading: \n");
-printMatrixPreview(result2, 10, 10);
-```
+    //We will multiply this matrix by the result of the 1st multiplication
+    var result2 = MatrixEngine.multiplyMatrices(result1, secondIterationMatrix);
+    System.out.println("2nd Multiplication /w No Threading: \n");
+    printMatrixPreview(result2, 10, 10);
+    ```
 
-- The variable `secondIterationMatrix` is an empty 1000x1000 matrix. We can then use the `fillMatrix()` method to fill the matrix with random numbers from 1-100
+    - The variable `secondIterationMatrix` is an empty 1000x1000 matrix. We can then use the `fillMatrix()` method to fill the matrix with random numbers from 1-100
 
 - We then do this a 3rd time, to get our 3rd final multiplication. `result1`, `result2` & `result3` should show an exponential increase in the output
 
-```java
-//And we will do this a 3rd time, for our 3rd iteration
-long[][] thirdIterationMatrix = new long[1000][1000];
-MatrixEngine.fillMatrix(thirdIterationMatrix);
+    ```java
+    //And we will do this a 3rd time, for our 3rd iteration
+    long[][] thirdIterationMatrix = new long[1000][1000];
+    MatrixEngine.fillMatrix(thirdIterationMatrix);
 
-//Multiplying the 3rd matrix by the result of the 2nd multiplication
-var result3 = MatrixEngine.multiplyMatrices(result2, thirdIterationMatrix);
-System.out.println("3rd Multiplication /w No Threading: \n");
-printMatrixPreview(result3, 10, 10);
-```
+    //Multiplying the 3rd matrix by the result of the 2nd multiplication
+    var result3 = MatrixEngine.multiplyMatrices(result2, thirdIterationMatrix);
+    System.out.println("3rd Multiplication /w No Threading: \n");
+    printMatrixPreview(result3, 10, 10);
+    ```
 
 ### Output
 
-- When we select the non-threaded option and run our program. This is what 1 run of the program will give us. Bear in mind, each run will be different as we are randomly generating each matrix
+- When we select the non-threaded option and run our program. This is what 1 run of the program will give us. Note that, each run will be different as we are randomly generating each matrix
 
 ```
 Please choose an option to run this program 
@@ -245,11 +250,115 @@ Matrix 2:
 Execution time: 10129 milliseconds
 ```
 
-- You can see the non-threaded method takes so long, in this particular run, it took us 10,129 ms to execute the whole method. This is because a single threaded program executes every line one by one, compared to multi-threading where you can spread out the workload across multiple workers
+- You can see the non-threaded method takes so long, in this particular run, it took us 10,129 ms to execute the whole method.
 
-- You can see the exponential increase in the results, which means the multiplication is working and is correct
+- You can also see the exponential increase in the results, which means the multiplication is working
 
 ## Task 2 - Multi-threaded Implementation
+
+- We will now look at a threaded implementation of this program. The multiplication process will now be done by multiple threads, which should significantly increase the performance of the application
+
+### matrixEngineThreaded.java (The thread code)
+
+```java
+public class matrixEngineThreaded extends Thread {
+    private long[][] matrix1;
+    private long[][] matrix2;
+    private long[][] resultMatrix;
+    private int startRow;
+    private int endRow;
+}
+```
+
+- To ensure we are utilising threads, we can use the `extends` attribute to make this whole class run in a threaded manner
+
+- In this class, we have some basic properties, and a constructor which allows us to pass this information in.
+    - `matrix1` & `matrix2` are the matrixes passed in for multiplication
+    - `resultMatrix` is used to store the result
+    - `startRow` & `endRow` are used for the multiplication, as the workload has been distributed among threads. We are working with portions of a 1000x1000 matrix
+
+- In this class, we have one main method which is the `multiply()` method, which is actually just the same code as the `multiplyMatrices()` method in the `matrixEngine` class. However, we run this method in the `run()` method, which is responsible for starting the thread
+
+    ```java
+    @Override
+    public void run() {
+        multiply();
+    }
+    ```
+
+### matrixEngine.java (Running the thread)
+
+- Now we will head back to the `matrixEngine` class to perform our matrix multiplication. Since most of our main logic is in that class, it would be wise to make our threaded implementation in there, to reduce unneccesary code.
+
+- Our threaded multiplication takes place in the `multiplyMatricesThreaded()` method, which returns a `long[][]` which is the resulting matrix after the multiplication
+
+- We start by creating an empty 1000x1000 matrix to use as the return object
+
+    ```java
+    long[][] resultMatrix = new long[1000][1000];
+    ```
+
+- Now we start creating the threads and we will calculate how many rows each thread will handle by dividing the total number of rows by the specified number of threads, which in this case is `numThreads`
+
+    ```java
+    // Calculating the distribution of workflow for these threads
+    for (int i = 0; i < numThreads; i++) {
+        int startRow = i * rowsPerThread;
+        int endRow = (i == numThreads - 1) ? 1000 : (i + 1) * rowsPerThread;
+
+        threads[i] = new matrixEngineThreaded(matrix1, matrix2, resultMatrix, startRow, endRow);
+        threads[i].start();
+    }
+    ```
+
+    - What we are doing here is `for` looping through each thread in the `threads` array
+
+    - We are then assigning a portion of the matrix for the thread to process, which is why we have the constructor for `matrixEngineThreaded`, because we can assign it to that class, and begin the thread
+
+    - Starting the thread, will execute the `multiply()` method we saw earlier
+
+- Now the threads will begin execution and start multiplying portions of each matrix until the entirety of `matrix1` and `matrix2` are multiplied. We have to make some logic to check if the threads have finished doing their job
+
+    ```java
+    // Wait for all threads to finish
+    try {
+        for (int i = 0; i < numThreads; i++) {
+            threads[i].join();
+        }
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+    ```
+
+    - A useful tool in java is the `try/catch` block, which ensures the application dosen't crash whenever it encounters an exception
+
+    - We can use the `join()` method to ensure that the main thread waits for each worker thread to complete before moving on.
+
+- Overall, this implementation divides the matrix multiplication task among multiple threads, allowing for concurrent execution and potentially speeding up the process compared to the single-threaded approach.
+
+### App.java (Execution)
+
+- A lot of the logic to execute this, is very similar to the `performMatrixMultiplicationNoThreading()` method. However this time, we need to use the `multiplyMatricesThreaded()` method, to run the program in a threaded manner
+
+- This is what happens when we execute the program, with threaded support
+
+    ```
+    Insert threaded execution here
+    ```
+
+### Comparing with the Gold Standard
+
+- To ensure that our threaded implementation works, we need to compare the output of this, versus our non-threaded code
+- Both outputs should be the same, the threaded code should only just run faster
+- To check this, we can simply subtract the outputs of the threaded/non-threaded code, and the result should just be 0
+
+    ```
+    Insert verification code here
+    ```
+
+    ```
+    Insert the output here
+    ```
 
 ## Task 3 - Thread Pool Implementation
 
