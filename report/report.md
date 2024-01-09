@@ -22,7 +22,7 @@
 
 - Keep in mind that the actual performance may vary based on the system and the workload.
 
-## Task 1 - Simple Implementation (Non-Threaded)
+## Task 1 - Simple Non-threaded implementation
 
 ### matrixEngine.java (Matrix Calculation Handler)
 
@@ -91,7 +91,7 @@
     resultMatrix[i][j] += matrix1[i][k] * matrix2[k][j];
     ```
 
-### App.java (The main program)
+### App.java (Execution)
 
 - The main application will run based on what option you select. You have the option to run the matrix program in a threaded or non-threaded manner
 
@@ -352,33 +352,164 @@ public class matrixEngineThreaded extends Thread {
 - To ensure that our threaded implementation works, we need to compare the output of this, versus our non-threaded code
 - Both outputs should be the same, the threaded code should only just run faster
 - To check this, we can simply subtract the outputs of the threaded/non-threaded code, and the result should just be 0
-- This is what the `verifyResult()` method does:
+    - This is what the `verifyResult()` method does:
 
-    ```java
-    private static void verifyResult(long[][] result, long[][] goldStandardResult) {
-        boolean verificationPassed = true;
-        for (int i = 0; i < 1000; i++) {
-            for (int j = 0; j < 1000; j++) {
-                if (result[i][j] != goldStandardResult[i][j]) {
-                    verificationPassed = false;
+        ```java
+        private static void verifyResult(long[][] result, long[][] goldStandardResult) {
+            boolean verificationPassed = true;
+            for (int i = 0; i < 1000; i++) {
+                for (int j = 0; j < 1000; j++) {
+                    if (result[i][j] != goldStandardResult[i][j]) {
+                        verificationPassed = false;
+                        break;
+                    }
+                }
+                if (!verificationPassed) {
                     break;
                 }
             }
-            if (!verificationPassed) {
-                break;
+
+            if (verificationPassed) {
+                System.out.println("Verification successful! Results match the gold standard.");
+            } else {
+                System.err.println("Verification failed! Results differ.");
             }
         }
-
-        if (verificationPassed) {
-            System.out.println("Verification successful! Results match the gold standard.");
-        } else {
-            System.err.println("Verification failed! Results differ.");
-        }
-    }
-    ```
+        ```
 
     - We can `for` loop through both results and perform a simple value check to see if each value of the matrix from both matrices, is equal to each other. If there is one unequal value, we know the matrixes aren't the same and something has gone wrong
 
 ## Task 3 - Thread Pool Implementation
+
+- We can execute this simple matrix program by using multiple threads, which is the job of a thread pool. By implementing a thread pool in this program, we can effectively manage multiple threads and allocate them tasks when a thread is free. This allows us to achieve concurrency within the program
+
+### matrixEngineThreadPool.java
+
+- The logic for performing the matrix multiplication is the same code as we saw in the threaded/non-threaded versions of this program. To keep things simple, I have reused this code in the `performMatrixMultiplicationThreaded()` method
+
+- However, where things start to change is the `performMatrixMultiplication` method. This is the main method responsible for creating the thread pool and allocating tasks to each thread.
+    - First of all, the method has 3 parameters, `matrix1`, `matrix2` and `numThreads` which is adjustable. The method also returns a `long[][]` which is the resulting matrix after 3 iterations
+
+        ```java
+        private static long[][] performMatrixMultiplication(long[][] matrix1, long[][] matrix2, int numThreads)
+        {
+            
+        }
+        ```
+
+- To implement our thread pool, we can take advantage of the `ExecutorService` class. This allows us to execute tasks concurrently. Once the thread has been submitted to the `ExecutorService` then the service will execute the task independently
+
+    ```java
+    //Using ExecutorService because it is a built-in framework for managing threads
+    ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
+
+    //Distributing the workload (in this case the 1000x1000 matrix) among multiple threads
+    int chunkSize = MATRIX_SIZE / numThreads;
+
+    //Making an empty 1000x1000 matrix to store the result (MATRIX_SIZE is hardcoded to 1000)
+    long[][] resultMatrix = new long[MATRIX_SIZE][MATRIX_SIZE];
+    Runnable[] tasks = new Runnable[numThreads];
+    ```
+
+    - We use the `.newFixedThreadPool` method to declare a new thread pool based on the number of threads, which in this case is `numThreads`
+    - Then we distribute the workload among each thread, which is what `chunkSize` is. We divide the overall matrix size (in this case 1000), by the number of threads there are, to get an even spread across all the threads.
+    - To manage our different threads, we can create a `Runnable` array of tasks and specify how many threads we have before we assign each thread to that array
+
+- Now its time to assign the multiplication tasks to each thread. Note that each thread will be processing portions of the matrix like in the basic threaded implementation
+
+    ```java
+    //For every thread that exists, assign a range of rows to process
+    for (int i = 0; i < numThreads; i++) {
+        int startRow = i * chunkSize;
+        int endRow = (i + 1) * chunkSize;
+        tasks[i] = () -> multiplySubMatrix(matrix1, matrix2, resultMatrix, startRow, endRow);
+        executorService.submit(tasks[i]);
+    }
+    ```
+
+    - We are `for` looping through each thread and assigning a portion of the matrix to multiply, which is what `startRow` and `endRow` imply.
+    - Now we get to assign the multiplication task to each thread in the `tasks` array. For every thread in this array, we are performing the `multiplySubMatrix()` method, providing our 2 matrixes and the specific rows we want to process.
+    - The `multiplySubMatrix()` method is important here, because it allows us to multiply parts of the matrix, rather than just doing it all in one go. The code is the same as the original multiplication method, however we are for looping in-between the `startRow` & `endRow`
+
+- Now the thread pool is processing the matrix and multiplying `matrix1` & `matrix2`. Once the threads are finished doing their job, we need to manage the shutdown process
+
+    ```java
+    //Initiates an orderly shutdown of the thread pool
+    executorService.shutdown();
+
+    //Wait for all the threads to finish their execution since the shutdown has been called
+    try {
+        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+
+    //Return the final result
+    return resultMatrix;
+    ```
+
+    - The `.shutdown()` method of the `ExecutorService` will initiate a thread shutdown process, in the order which the threads were created
+    - We need to wait for every worker thread to finish doing their execution before we shutdown the whole thread pool, which is why we are using the `.awaitTermination()` method, rather than just directly shutting the thread pool down.
+    - We can also use a `try/catch` block to further improve the stability of the thread pool. If something goes wrong, the program won't go into a panic state
+
+### App.java (Execution)
+
+- Executing the thread pool, we can see it's execution times are very similar to the basic threaded implementation, in some cases it definitely runs much faster
+- The following execution took place with the following parameters:
+```java
+private static final int MATRIX_SIZE = 1000;
+private static final int NUM_THREADS = 4;
+
+long[][] result1 = performMatrixMultiplication(matrices.matrix1, matrices.matrix2, NUM_THREADS);
+//Will be the same for result2 & result 3
+```
+
+```
+Please choose an option to run this program 
+1. Run /w No Threading
+2. Run /w Threading
+3. Run using Thread Pool
+4. Verify Threaded vs Non-Threaded
+5. Exit Program
+3
+Matrix 1: 
+
+70 2 38 83 73 9 99 21 56 77 
+42 92 37 16 30 9 5 99 42 18
+9 13 82 57 27 37 69 38 36 65
+35 61 53 29 42 51 37 96 45 62 
+69 0 88 1 4 19 45 89 29 44
+53 52 64 76 28 87 45 47 64 31
+44 11 81 68 72 88 71 78 38 54
+37 22 88 18 37 67 16 19 62 94
+32 11 72 73 84 13 86 13 4 77
+6 23 47 39 60 81 8 23 49 99
+
+Matrix 2:
+
+27 78 47 83 1 34 67 50 15 13
+65 50 30 31 17 55 30 54 57 72
+88 85 13 20 56 97 24 77 77 7
+90 40 33 16 38 23 30 57 17 45
+79 86 48 18 96 34 23 81 6 39
+25 33 63 27 88 72 0 77 59 5
+15 61 2 40 4 69 89 69 23 88
+92 63 45 18 49 14 67 98 13 28 
+50 19 7 18 94 24 38 63 63 23
+21 70 11 89 48 73 30 13 41 64
+
+1st Multiplication /w Thread Pool: 
+...
+
+2nd Multiplication /w Thread Pool: 
+...
+
+3rd Multiplication /w Thread Pool: 
+...  
+
+Thread Pool Execution time: 1305 milliseconds
+```
+
+- In conclusion, thread pools are a very useful tool to make a program run concurrently. You have absolute control over the distribution of the workload and each worker thread. In the next section, we will test the stability of this thread pool implementation and see if it is good enough for business use
 
 ## Task 4 - Testing the Thread Pool
