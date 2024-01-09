@@ -19,9 +19,13 @@ public class App {
                             "5. Exit Program");
         int input = threadingInputOption.nextInt();
 
-        long startTime, endTime; //These 2 variables will be used to show how long it took for our methods to execute
+        //Time variables
+        long startTime, endTime;
         
+        //Initialise the matrix handler class
         matrixEngine MatrixEngine = new matrixEngine();
+
+        //Generate the starting 2 matrixes
         var startingMatrix = MatrixEngine.GenerateBaseMatrixes();
 
         if (input == 1) {
@@ -38,6 +42,7 @@ public class App {
             endTime = System.currentTimeMillis();
         } else if (input == 4) {
             startTime = System.currentTimeMillis();
+
             var nonThreaded = performMatrixMultiplicationNoThreading(startingMatrix.matrix1, startingMatrix.matrix2);
             var threaded = performMatrixMultiplicationThreaded(startingMatrix.matrix1, startingMatrix.matrix2);
 
@@ -61,6 +66,7 @@ public class App {
     }
 
     private static long[][] performMatrixMultiplicationNoThreading(long[][] matrix1, long[][] matrix2) {
+        //Initialize MatrixEngine
         var MatrixEngine = new matrixEngine();
 
         //Display the 2 starting matrixes which will be multiplied together to give our first iteration
@@ -97,7 +103,7 @@ public class App {
     }
 
     private static long[][] performMatrixMultiplicationThreaded(long[][] matrix1, long[][] matrix2) {
-        //Initialize Class
+        //Initialize MatrixEngine
         var MatrixEngine = new matrixEngine();
 
         //Print out the first 10x10 portion of each matrix
@@ -136,8 +142,6 @@ public class App {
         matrixThreadingEngine.performMatrixMultiplicationThreaded();
     }
 
-    //Method to display a matrix with the option to only display a specific portion
-    //This is because a whole 1000x1000 matrix can be cumbersome to view entirely
     private static void printMatrixPreview(long[][] matrix, int previewRows, int previewCols) {
         for (int i = 0; i < Math.min(previewRows, matrix.length); i++) {
             for (int j = 0; j < Math.min(previewCols, matrix[i].length); j++) {
