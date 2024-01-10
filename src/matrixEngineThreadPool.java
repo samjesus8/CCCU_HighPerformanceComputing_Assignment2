@@ -23,21 +23,21 @@ public class matrixEngineThreadPool {
         printMatrixPreview(matrices.matrix2, 10, 10);
 
         //Then run our threads to perform this multiplication
-        long[][] result1 = performMatrixMultiplication(matrices.matrix1, matrices.matrix2, NUM_THREADS);
+        long[][] result1 = performMatrixMultiplication(matrices.matrix1, matrices.matrix2, NUM_THREADS, 0.5);
         System.out.println("1st Multiplication /w Thread Pool: \n");
         printMatrixPreview(result1, 10, 10);
 
         //2nd Iteration
         long[][] secondIterationMatrix = new long[MATRIX_SIZE][MATRIX_SIZE];
         matrixEngine.fillMatrix(secondIterationMatrix);
-        long[][] result2 = performMatrixMultiplication(result1, secondIterationMatrix, NUM_THREADS);
+        long[][] result2 = performMatrixMultiplication(result1, secondIterationMatrix, NUM_THREADS, 0.5);
         System.out.println("2nd Multiplication /w Thread Pool: \n");
         printMatrixPreview(result2, 10, 10);
 
         //3rd Iteration
         long[][] thirdIterationMatrix = new long[MATRIX_SIZE][MATRIX_SIZE];
         matrixEngine.fillMatrix(thirdIterationMatrix);
-        long[][] result3 = performMatrixMultiplication(result2, thirdIterationMatrix, NUM_THREADS);
+        long[][] result3 = performMatrixMultiplication(result2, thirdIterationMatrix, NUM_THREADS, 0.5);
         System.out.println("3rd Multiplication /w Thread Pool: \n");
         printMatrixPreview(result3, 10, 10);
 
@@ -57,7 +57,7 @@ public class matrixEngineThreadPool {
         verifyResult(result3, goldStandardResult3);
     }
 
-    private static long[][] performMatrixMultiplication(long[][] matrix1, long[][] matrix2, int numThreads) {
+    private static long[][] performMatrixMultiplication(long[][] matrix1, long[][] matrix2, int numThreads, double terminationProbability) {
         //Using ExecutorService because it is a built-in framework for managing threads
         ExecutorService executorService = Executors.newFixedThreadPool(numThreads);
 
@@ -72,8 +72,17 @@ public class matrixEngineThreadPool {
         for (int i = 0; i < numThreads; i++) {
             int startRow = i * chunkSize;
             int endRow = (i + 1) * chunkSize;
-            tasks[i] = () -> multiplySubMatrix(matrix1, matrix2, resultMatrix, startRow, endRow);
+            tasks[i] = () -> {
+                multiplySubMatrix(matrix1, matrix2, resultMatrix, startRow, endRow);
+                if (Math.random() < terminationProbability) {
+                    // Terminate the thread without passing back the result
+                    System.out.println("A thread was terminated!!!!!");
+                    return;
+                }
+            };
             executorService.submit(tasks[i]);
+    
+            //Code continues to the shutdown...
         }
 
         //Initiates an orderly shutdown of the thread pool
