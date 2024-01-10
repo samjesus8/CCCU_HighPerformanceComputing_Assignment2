@@ -43,7 +43,7 @@
     }
     ```
 
-    - The reason I am using `long` as the data type for the matrix, is so that I can handle overflow of values. `long` can support values from `-9,223,372,036,854,775,808` up to `9,223,372,036,854,775,807`.
+    - The reason I am using `long` as the data type for the matrix, is so that I can handle overflow of values [[1]](). `long` can support values from `-9,223,372,036,854,775,808` up to `9,223,372,036,854,775,807`
 
     - Because Java doesn't allow methods to return more than 1 data type, I made another class called `matrixResult` which stores the 2 matrixes in one object, also known as a tuple.
 
@@ -80,7 +80,7 @@
     }
     ```
 
-    - The triple-nested `for` loop in this method is what performs the multiplication. What it does is iterate through each element of the 2 matrixes and perform dot-product matrix multiplication
+    - The triple-nested `for` loop in this method is what performs the multiplication. What it does is iterate through each element of the 2 matrixes and perform dot-product [[2]]() matrix multiplication
         - `i` will iterate over every ROW of `matrix1`
         - `j` will iterate over every COLUMN of `matrix2`
         - `k` will iterate over the COLUMNS of `matrix1` and the ROWS of `matrix2`
@@ -208,6 +208,7 @@ Matrix 2:
 
 Execution time: 10129 milliseconds
 ```
+*The resulting matrixes will not be included to simplify the displayed example*
 
 - The non-threaded method takes so long, in this particular run, it took us 10,129 ms to execute the whole method.
 
@@ -227,7 +228,7 @@ public class matrixEngineThreaded extends Thread {
 }
 ```
 
-- To ensure we are utilizing threads, we can use the `extends` attribute to make this whole class run in a threaded manner
+- To ensure we are utilizing threads, we can use the `extends` [[3]]() [[4]]() attribute to make this whole class run in a threaded manner
 
 - In this class, we have some basic properties, and a constructor which allows us to pass this information in.
     - `matrix1` & `matrix2` are the matrixes passed in for multiplication
@@ -349,8 +350,7 @@ public class matrixEngineThreaded extends Thread {
 
 ### Comparing with the Gold Standard
 
-- To ensure that our threaded implementation works, we need to compare the output of this, versus our non-threaded code
-- Both outputs should be the same, the threaded code should only just run faster
+- To ensure that our threaded implementation works, we need to compare the output of this, versus our non-threaded code. Both outputs should be the same, the threaded code should only just run faster
 - To check this, we can simply subtract the outputs of the threaded/non-threaded code, and the result should just be 0
     - This is what the `verifyResult()` method does:
 
@@ -397,7 +397,7 @@ public class matrixEngineThreaded extends Thread {
         }
         ```
 
-- To implement our thread pool, we can take advantage of the `ExecutorService` class. This allows us to execute tasks concurrently. Once the thread has been submitted to the `ExecutorService` then the service will execute the task independently
+- To implement our thread pool, we can take advantage of the `ExecutorService` class [[5]](). This allows us to execute tasks concurrently. Once the thread has been submitted to the `ExecutorService` then the service will execute the task independently
 
     ```java
     //Using ExecutorService because it is a built-in framework for managing threads
@@ -636,4 +636,20 @@ Thread Pool Execution time: 1305 milliseconds
 
 ## Conclusion
 
-- Text
+The implementation of threading, thread pools, and concurrency provides a means to exploit the full potential of modern hardware, enabling businesses to achieve faster and more scalable solutions. In the context of this assignment, several key insights and advantages have been gained through the exploration of non-threaded, multi-threaded, and thread pool methods.
+
+Threading, especially in scenarios involving complex computations like matrix multiplication, significantly improves performance by parallelizing tasks. This is crucial for reducing execution times, meeting business requirements, and achieving real-time processing capabilities. This promotes your application to be very flexible, as threading reduces the demand on your system resources by effectively managing and reusing existing threads.
+
+The lessons learned from coding this matrix multiplication program shows the importance of aligning threading strategies with specific business requirements, striking a balance between performance gains and the inherent complexities introduced by concurrent execution. By understanding these concepts, businesses can unlock the full potential of their computational resources, allowing for the development of more efficient and responsive applications.
+
+## References
+
+1. gongshwgongshw 83211 gold badge66 silver badges1111 bronze badges et al. (1959) A long bigger than long.max_value, Stack Overflow. Available at: https://stackoverflow.com/questions/16546038/a-long-bigger-than-long-max-value (Accessed: 23 December 2023).
+
+2. How to multiply matrices (no date) Math is Fun Advanced. Available at: https://www.mathsisfun.com/algebra/matrix-multiplying.html (Accessed: 23 December 2023).
+
+3. Drake, D.G. (1996) Introduction to java threads, InfoWorld. Available at: https://www.infoworld.com/article/2077138/introduction-to-java-threads.html (Accessed: 28 December 2023).
+
+4. Java Threads (no date) W3 Schools. Available at: https://www.w3schools.com/java/java_threads.asp (Accessed: 28 December 2023).
+
+5. Jenkov, J. (2023) Java ExecutorService, Jenkov.com Tech & Media Labs - Resources for Developers, IT Architects and Technopreneurs. Available at: https://jenkov.com/tutorials/java-util-concurrent/executorservice.html (Accessed: 30 December 2023). 
